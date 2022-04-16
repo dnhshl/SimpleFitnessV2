@@ -25,12 +25,11 @@ class MainViewModel : ViewModel() {
         try {
             viewModelScope.launch {
                 val jsonString = FitnessApi.retrofitService.getData()
-                // sobald die Daten da sind, werden sie per LiveData angezeigt
+                // Daten umwandeln
                 parseJsonData(jsonString)
             }
         }  catch (e: Exception) {
-            Log.i(TAG, "Error Internet Access ${e.message}$")
-            //_fitnessData.value = "Error Internet Access ${e.message}$"
+            Log.i(TAG, "Error loading data ${e.message}$")
         }
     }
 
@@ -39,6 +38,7 @@ class MainViewModel : ViewModel() {
             //response String zu einem JSON Objekt
             val obj = JSONObject(jsonString)
             _fitnessData.value =  FitnessData(
+                // Einzelne Elemente des JSON Objects extrahieren
                 fitness = obj.getDouble("fitness"),
                 puls = obj.getInt("puls"),
                 timestamp = obj.getString("isotimestamp")
@@ -46,8 +46,6 @@ class MainViewModel : ViewModel() {
         } catch (e : JSONException) {
             e.printStackTrace()
             Log.i(TAG, "Error JSON Parsing ${e.message}")
-            //return FitnessData(-1.0, -1, "2000-01-01T00:00:00.00000+00:00")
         }
     }
-
 }

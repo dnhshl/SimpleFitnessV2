@@ -11,4 +11,5 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <string name="error_json_parsing">JSON Parsing Error</string>
+    <string name="fitness_data_string">Fitness: %.1f\nPuls: %d</string>
 </resources>
