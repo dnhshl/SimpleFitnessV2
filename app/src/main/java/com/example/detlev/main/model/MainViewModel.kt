@@ -6,7 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.detlev.main.network.ErrorCodes
 import com.example.detlev.main.network.FitnessApi
+import com.example.detlev.main.network.FitnessApiService
 import com.example.detlev.main.network.FitnessData
 import kotlinx.coroutines.*
 import org.json.JSONException
@@ -30,6 +32,7 @@ class MainViewModel : ViewModel() {
             }
         }  catch (e: Exception) {
             Log.i(TAG, "Error loading data ${e.message}$")
+            //_fitnessData.value = FitnessData(errorcode = ErrorCodes.INTERNET_ERROR)
         }
     }
 
@@ -66,6 +69,7 @@ class MainViewModel : ViewModel() {
         } catch (e : JSONException) {
             e.printStackTrace()
             Log.i(TAG, "Error JSON Parsing ${e.message}")
+            //_fitnessData.value = FitnessData(errorcode = ErrorCodes.JSON_ERROR)
         }
     }
 }
