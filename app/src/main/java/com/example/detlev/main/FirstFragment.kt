@@ -35,10 +35,16 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        with (binding.speedView) {
+            unit = ""
+            minSpeed = 30F
+            maxSpeed = 170F
+            withTremble = false
+            speedTo(30F,0L)
+        }
+
         viewModel.fitnessData.observe(viewLifecycleOwner) {
-                fitnessData -> binding.textviewFirst.text =
-                                getString(R.string.fitness_data_string)
-                                .format(fitnessData.fitness, fitnessData.puls)
+                fitnessData -> binding.speedView.speedTo(fitnessData.puls.toFloat())
         }
 
         binding.buttonFirst.setOnClickListener {
