@@ -32,7 +32,7 @@ class FirstFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.fitnessData.observe(viewLifecycleOwner) {
-                fitnessData -> binding.textviewFirst.text = fitnessData
+                fitnessData -> binding.textviewFirst.text = "${fitnessData.puls}"
         }
 
         binding.buttonFirst.setOnClickListener {
