@@ -12,6 +12,7 @@ import com.example.detlev.main.databinding.FragmentFirstBinding
 import com.example.detlev.main.model.MainViewModel
 import com.example.detlev.main.network.ErrorCodes
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Job
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -22,6 +23,9 @@ class FirstFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: MainViewModel by activityViewModels()
+
+    private lateinit var dataLoadJob: Job
+    private var dataIsLoading = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,7 +57,17 @@ class FirstFragment : Fragment() {
 
 
         binding.buttonFirst.setOnClickListener {
-            viewModel.getFitnessData()
+            when (dataIsLoading) {
+                false -> {
+                    dataLoadJob = viewModel.startRepeatingDataLoadJob(1000)
+                    binding.buttonFirst.text = getString(R.string.stop_load_data)
+                }
+                true -> {
+                    dataLoadJob.cancel()
+                    binding.buttonFirst.text = getString(R.string.start_load_data)
+                }
+            }
+            dataIsLoading = !dataIsLoading
         }
     }
 

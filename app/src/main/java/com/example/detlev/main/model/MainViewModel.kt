@@ -5,6 +5,9 @@ import androidx.lifecycle.*
 import com.example.detlev.main.network.ErrorCodes
 import com.example.detlev.main.network.FitnessApi
 import com.example.detlev.main.network.FitnessData
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -24,6 +27,26 @@ class MainViewModel : ViewModel() {
             } catch (e: Exception) {
                 Log.i(TAG, "Error loading data ${e.message}")
                 _fitnessData.value = ""
+            }
+        }
+    }
+
+    /**
+     * start Job
+     * val job = startRepeatingJob()
+     * cancels the job and waits for its completion
+     * job.cancelAndJoin()
+     * cancel the job
+     * job.cancel()
+     * Params
+     * timeInterval: time milliSeconds
+     */
+    fun startRepeatingDataLoadJob(timeInterval: Long): Job {
+        return viewModelScope.launch {
+            while (isActive) {
+                // add your task here
+                getFitnessData()
+                delay(timeInterval)
             }
         }
     }
