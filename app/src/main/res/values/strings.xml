@@ -9,4 +9,6 @@
 
     <string name="hello_first_fragment">no Data</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
+    <string name="fitness_data_string">Fitness: %.1f\nPuls: %d</string>
 </resources>

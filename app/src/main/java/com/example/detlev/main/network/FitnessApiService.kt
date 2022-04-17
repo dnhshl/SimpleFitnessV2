@@ -27,3 +27,6 @@ interface FitnessApiService {
 object FitnessApi {
     val retrofitService : FitnessApiService by lazy { retrofit.create(FitnessApiService::class.java) }
 }
+
+// Datenobjekt zu Abbildung der JSON Daten
+data class FitnessData(val fitness: Double, val puls: Int, val timestamp: String)

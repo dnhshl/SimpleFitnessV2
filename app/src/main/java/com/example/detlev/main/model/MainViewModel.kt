@@ -1,19 +1,19 @@
 package com.example.detlev.main.model
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.detlev.main.network.FitnessApi
+import com.example.detlev.main.network.FitnessData
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 class MainViewModel : ViewModel() {
     private val TAG = "MainViewModel"
 
     private var _fitnessData = MutableLiveData<String>()
-    val fitnessData: LiveData<String>
-        get() = _fitnessData
+    val fitnessData: LiveData<FitnessData>
+        = Transformations.map(_fitnessData) { parseJsonData(it) }
+
 
     fun getFitnessData() {
         viewModelScope.launch {
@@ -23,6 +23,20 @@ class MainViewModel : ViewModel() {
             } catch (e: Exception) {
                 Log.i(TAG, "Error loading data ${e.message}")
             }
+        }
+    }
+
+    private fun parseJsonData(jsonString: String): FitnessData {
+        try {
+            val obj = JSONObject(jsonString)
+            return FitnessData(
+                obj.getDouble("fitness"),
+                obj.getInt("puls"),
+                obj.getString("isotimestamp")
+            )
+        } catch (e: Exception) {
+            Log.i(TAG, "Error parsing JSON ${e.message}")
+            return FitnessData(0.0, 0, "")
         }
     }
 }
