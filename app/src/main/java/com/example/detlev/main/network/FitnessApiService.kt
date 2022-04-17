@@ -4,6 +4,13 @@ import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 
+// Error Codes
+object ErrorCodes {
+    const val NO_ERROR = 0
+    const val INTERNET_ERROR = 1
+    const val JSON_ERROR = 2
+}
+
 // Hier Basis URL der Webseite, von der Daten abgerufen werden sollen
 private const val BASE_URL = "https://us-central1-si-hshl.cloudfunctions.net/"
 
@@ -29,4 +36,8 @@ object FitnessApi {
 }
 
 // Datenobjekt zu Abbildung der JSON Daten
-data class FitnessData(val fitness: Double, val puls: Int, val timestamp: String)
+data class FitnessData(val fitness: Double  = 0.0,
+                       val puls: Int = 0,
+                       val timestamp: String = "",
+                       val errorcode: Int = ErrorCodes.NO_ERROR
+)

@@ -11,4 +11,7 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <string name="fitness_data_string">Fitness: %.1f\nPuls: %d</string>
+    <string name="internet_error">Fehler Internetdatenabruf</string>
+    <string name="json_error">Fehler in den JSON Daten</string>
+
 </resources>

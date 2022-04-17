@@ -2,6 +2,7 @@ package com.example.detlev.main.model
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.example.detlev.main.network.ErrorCodes
 import com.example.detlev.main.network.FitnessApi
 import com.example.detlev.main.network.FitnessData
 import kotlinx.coroutines.launch
@@ -22,21 +23,23 @@ class MainViewModel : ViewModel() {
                 _fitnessData.value = jsonString
             } catch (e: Exception) {
                 Log.i(TAG, "Error loading data ${e.message}")
+                _fitnessData.value = ""
             }
         }
     }
 
     private fun parseJsonData(jsonString: String): FitnessData {
+        if (jsonString.isEmpty()) return FitnessData(errorcode = ErrorCodes.INTERNET_ERROR)
         try {
             val obj = JSONObject(jsonString)
             return FitnessData(
-                obj.getDouble("fitness"),
-                obj.getInt("puls"),
-                obj.getString("isotimestamp")
+                fitness = obj.getDouble("fitness"),
+                puls = obj.getInt("puls"),
+                timestamp = obj.getString("isotimestamp")
             )
         } catch (e: Exception) {
             Log.i(TAG, "Error parsing JSON ${e.message}")
-            return FitnessData(0.0, 0, "")
+            return FitnessData(errorcode = ErrorCodes.JSON_ERROR)
         }
     }
 }
