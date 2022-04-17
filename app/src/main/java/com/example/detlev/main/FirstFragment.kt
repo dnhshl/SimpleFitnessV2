@@ -33,9 +33,10 @@ class FirstFragment : Fragment() {
 
         viewModel.fitnessData.observe(viewLifecycleOwner) {
                 fitnessData -> binding.textviewFirst.text =
-                                getString(R.string.fitness_data_string)
-                                .format(fitnessData.fitness, fitnessData.puls)
+                        getString(R.string.fitness_data_string)
+                        .format(fitnessData.fitness, fitnessData.puls)
         }
+
 
         binding.buttonFirst.setOnClickListener {
             viewModel.getFitnessData()
