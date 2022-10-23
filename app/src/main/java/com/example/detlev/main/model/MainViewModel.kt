@@ -5,6 +5,8 @@ import androidx.lifecycle.*
 import com.example.detlev.main.network.ErrorCodes
 import com.example.detlev.main.network.FitnessApi
 import com.example.detlev.main.network.FitnessData
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineDataSet
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -18,6 +20,12 @@ class MainViewModel : ViewModel() {
     val fitnessData: LiveData<FitnessData>
         = Transformations.map(_fitnessData) { parseJsonData(it) }
 
+    private var _pulsDataSet = LineDataSet(mutableListOf<Entry>(), "Pulswerte")
+    val pulsDataSet: LineDataSet
+        get() = _pulsDataSet
+
+
+    private var counter = 0
 
     fun getFitnessData() {
         viewModelScope.launch {
@@ -29,6 +37,8 @@ class MainViewModel : ViewModel() {
                 _fitnessData.value = ""
             }
         }
+
+
     }
 
     /**
@@ -55,6 +65,10 @@ class MainViewModel : ViewModel() {
         if (jsonString.isEmpty()) return FitnessData(errorcode = ErrorCodes.INTERNET_ERROR)
         try {
             val obj = JSONObject(jsonString)
+
+            _pulsDataSet.addEntry(Entry(counter.toFloat(), obj.getDouble("puls").toFloat()))
+            counter++
+
             return FitnessData(
                 fitness = obj.getDouble("fitness"),
                 puls = obj.getInt("puls"),
@@ -65,4 +79,5 @@ class MainViewModel : ViewModel() {
             return FitnessData(errorcode = ErrorCodes.JSON_ERROR)
         }
     }
+
 }

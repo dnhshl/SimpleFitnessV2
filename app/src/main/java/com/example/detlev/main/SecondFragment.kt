@@ -1,12 +1,17 @@
 package com.example.detlev.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.detlev.main.databinding.FragmentSecondBinding
+import com.example.detlev.main.model.MainViewModel
+import com.example.detlev.main.network.ErrorCodes
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -25,7 +30,7 @@ class SecondFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private var dataSeries: ArrayList<Entry> = ArrayList()
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,18 +57,19 @@ class SecondFragment : Fragment() {
             isDragEnabled = true
             isScaleXEnabled = true
             isScaleYEnabled = true
+
+            data = LineData(viewModel.pulsDataSet)
         }
 
-        // add some testdata
-        dataSeries.add(Entry(1.0f, 100.0f))
-        dataSeries.add(Entry(2.0f, 120.0f))
-        dataSeries.add(Entry(3.0f, 90.0f))
-        dataSeries.add(Entry(4.0f, 110.0f))
-        dataSeries.add(Entry(5.0f, 85.0f))
 
-        // display graph
-        binding.lineChart.data = LineData(LineDataSet(dataSeries, "Testdaten"))
-        binding.lineChart.invalidate()
+        viewModel.fitnessData.observe(viewLifecycleOwner) {
+            Log.i(">>>>>", "new Data")
+            with (binding.lineChart) {
+                data.notifyDataChanged()
+                notifyDataSetChanged()
+                invalidate()
+            }
+        }
 
     }
 
@@ -71,5 +77,5 @@ class SecondFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-    
+
 }
