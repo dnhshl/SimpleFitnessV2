@@ -12,6 +12,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class MainViewModel : ViewModel() {
     private val TAG = "MainViewModel"
@@ -25,7 +28,7 @@ class MainViewModel : ViewModel() {
         get() = _pulsDataSet
 
 
-    private var counter = 0
+    val baseTimestamp = LocalDateTime.now()
 
     fun getFitnessData() {
         viewModelScope.launch {
@@ -66,8 +69,9 @@ class MainViewModel : ViewModel() {
         try {
             val obj = JSONObject(jsonString)
 
-            _pulsDataSet.addEntry(Entry(counter.toFloat(), obj.getDouble("puls").toFloat()))
-            counter++
+            val timestamp = LocalDateTime.parse(obj.getString("isotimestamp"), DateTimeFormatter.ISO_DATE_TIME)
+            val timediff = Duration.between(baseTimestamp, timestamp).seconds
+            _pulsDataSet.addEntry(Entry(timediff.toFloat(), obj.getDouble("puls").toFloat()))
 
             return FitnessData(
                 fitness = obj.getDouble("fitness"),

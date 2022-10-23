@@ -18,6 +18,9 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.ValueFormatter
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -53,6 +56,8 @@ class SecondFragment : Fragment() {
             xAxis.labelRotationAngle = 90f
             xAxis.labelCount = 10
 
+            xAxis.valueFormatter = TimeValueFormatter(viewModel.baseTimestamp)
+
             //enable scrolling and scaling
             isDragEnabled = true
             isScaleXEnabled = true
@@ -71,6 +76,13 @@ class SecondFragment : Fragment() {
             }
         }
 
+    }
+
+    private class TimeValueFormatter(private val baseTimestamp: LocalDateTime) : ValueFormatter() {
+        override fun getFormattedValue(value: Float): String {
+            val datetime = baseTimestamp.plusSeconds(value.toLong())
+            return datetime.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
+        }
     }
 
     override fun onDestroyView() {
