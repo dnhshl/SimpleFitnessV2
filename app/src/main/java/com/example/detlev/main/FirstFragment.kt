@@ -1,24 +1,23 @@
 package com.example.detlev.main
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.detlev.main.databinding.FragmentFirstBinding
 import com.example.detlev.main.model.MainViewModel
 import com.example.detlev.main.network.ErrorCodes
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Job
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class FirstFragment : Fragment() {
-
-    private val TAG = "FirstFragment"
 
     private var _binding: FragmentFirstBinding? = null
     private val binding get() = _binding!!
@@ -47,13 +46,20 @@ class FirstFragment : Fragment() {
             speedTo(30F,0L)
         }
 
+
         viewModel.fitnessData.observe(viewLifecycleOwner) {
-                fitnessData -> when (fitnessData.errorcode) {
-                    ErrorCodes.NO_ERROR -> binding.speedView.speedTo(fitnessData.puls.toFloat())
-                    //ErrorCodes.INTERNET_ERROR -> Log.i(TAG, "Internet Error")
-                    //ErrorCodes.JSON_ERROR -> Log.i(TAG, "JSON Error")
-            }
+                fitnessData -> run {
+                    when (fitnessData.errorcode) {
+                        ErrorCodes.NO_ERROR ->
+                            binding.speedView.speedTo(fitnessData.puls.toFloat())
+                        ErrorCodes.INTERNET_ERROR ->
+                            Toast.makeText(context, R.string.internet_error, Toast.LENGTH_LONG).show()
+                        ErrorCodes.JSON_ERROR ->
+                            Toast.makeText(context, R.string.json_error, Toast.LENGTH_LONG).show()
+                    }
+                }
         }
+
 
         binding.buttonFirst.setOnClickListener {
             when (dataIsLoading) {

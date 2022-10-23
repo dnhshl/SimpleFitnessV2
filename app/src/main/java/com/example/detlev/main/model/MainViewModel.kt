@@ -1,39 +1,47 @@
 package com.example.detlev.main.model
 
-import android.provider.Settings.Global.getString
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.detlev.main.network.ErrorCodes
 import com.example.detlev.main.network.FitnessApi
-import com.example.detlev.main.network.FitnessApiService
 import com.example.detlev.main.network.FitnessData
-import kotlinx.coroutines.*
-import org.json.JSONException
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineDataSet
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class MainViewModel : ViewModel() {
-    private var _fitnessData = MutableLiveData<FitnessData>()
-    val fitnessData: LiveData<FitnessData>
-        get() = _fitnessData
-
     private val TAG = "MainViewModel"
 
+    private var _fitnessData = MutableLiveData<String>()
+    val fitnessData: LiveData<FitnessData>
+        = Transformations.map(_fitnessData) { parseJsonData(it) }
+
+    private var _pulsDataSet = LineDataSet(mutableListOf<Entry>(), "Pulswerte")
+    val pulsDataSet: LineDataSet
+        get() = _pulsDataSet
+
+
+    val baseTimestamp = LocalDateTime.now()
 
     fun getFitnessData() {
-        // Daten im Hintergrund abrufen
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
                 val jsonString = FitnessApi.retrofitService.getData()
-                // Daten umwandeln
-                parseJsonData(jsonString)
+                _fitnessData.value = jsonString
+            } catch (e: Exception) {
+                Log.i(TAG, "Error loading data ${e.message}")
+                _fitnessData.value = ""
             }
-        }  catch (e: Exception) {
-            Log.i(TAG, "Error loading data ${e.message}$")
-            //_fitnessData.value = FitnessData(errorcode = ErrorCodes.INTERNET_ERROR)
         }
+
+
     }
 
     /**
@@ -56,20 +64,24 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private fun parseJsonData(jsonString: String) {
+    private fun parseJsonData(jsonString: String): FitnessData {
+        if (jsonString.isEmpty()) return FitnessData(errorcode = ErrorCodes.INTERNET_ERROR)
         try {
-            //response String zu einem JSON Objekt
             val obj = JSONObject(jsonString)
-            _fitnessData.value =  FitnessData(
-                // Einzelne Elemente des JSON Objects extrahieren
+
+            val timestamp = LocalDateTime.parse(obj.getString("isotimestamp"), DateTimeFormatter.ISO_DATE_TIME)
+            val timediff = Duration.between(baseTimestamp, timestamp).seconds
+            _pulsDataSet.addEntry(Entry(timediff.toFloat(), obj.getDouble("puls").toFloat()))
+
+            return FitnessData(
                 fitness = obj.getDouble("fitness"),
                 puls = obj.getInt("puls"),
                 timestamp = obj.getString("isotimestamp")
             )
-        } catch (e : JSONException) {
-            e.printStackTrace()
-            Log.i(TAG, "Error JSON Parsing ${e.message}")
-            //_fitnessData.value = FitnessData(errorcode = ErrorCodes.JSON_ERROR)
+        } catch (e: Exception) {
+            Log.i(TAG, "Error parsing JSON ${e.message}")
+            return FitnessData(errorcode = ErrorCodes.JSON_ERROR)
         }
     }
+
 }

@@ -3,14 +3,20 @@
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">FitnessData</string>
-    <string name="second_fragment_label">Fitness Data Graph</string>
-    <string name="start_load_data">Starte Datenabruf</string>
-    <string name="stop_load_data">Stoppe Datenabruf</string>
+    <string name="second_fragment_label">GraphView</string>
+    <string name="next">Rufe Daten ab</string>
     <string name="previous">Previous</string>
 
-    <string name="no_data">no data</string>
+    <string name="hello_first_fragment">no Data</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
-    <string name="error_json_parsing">JSON Parsing Error</string>
     <string name="fitness_data_string">Fitness: %.1f\nPuls: %d</string>
+    <string name="internet_error">Fehler Internetdatenabruf</string>
+    <string name="json_error">Fehler in den JSON Daten</string>
+
+    <string name="start_load_data">starte Datenabruf</string>
+    <string name="stop_load_data">stoppe Datenabruf</string>
+
+    <string name="menu_first">Home</string>
+    <string name="menu_second">GraphView</string>
 </resources>
