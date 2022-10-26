@@ -72,6 +72,8 @@ class MainViewModel : ViewModel() {
             val timestamp = LocalDateTime.parse(obj.getString("isotimestamp"), DateTimeFormatter.ISO_DATE_TIME)
             val timediff = Duration.between(baseTimestamp, timestamp).seconds
             _pulsDataSet.addEntry(Entry(timediff.toFloat(), obj.getDouble("puls").toFloat()))
+            // Beschränke max. Anzahl angezeigter Werte
+            if (_pulsDataSet.entryCount > 15)  _pulsDataSet.removeFirst()
 
             return FitnessData(
                 fitness = obj.getDouble("fitness"),
